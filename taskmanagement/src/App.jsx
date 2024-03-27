@@ -2,11 +2,13 @@ import format from "date-fns/format";
 import getDay from "date-fns/getDay";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Cookies from 'universal-cookie';
+import moment from "moment";
 import "./App.css";
 
 const locales = {
@@ -21,22 +23,61 @@ const localizer = dateFnsLocalizer({
   locales
 });
 
-const events = [];
+let events = [];
 
 function App() {
   const [newEvent, setNewEvent] = useState({ title: "", start: "", end: "" });
   const [allEvents, setAllEvents] = useState(events);
 
+  // Load cookies once on component mount
+  useEffect(() => {
+    const cookies = new Cookies();
+    const res = cookies.getAll();
+
+    let tempEventArray = [];
+
+    Object.entries(res).forEach(([cookieName, cookieValue]) => {
+      const { title, start, end } = cookieValue;
+      tempEventArray.push(
+        {
+          title: title,
+          start: moment(start).toDate(),
+          end: moment(end).toDate(),
+        }
+      )
+    });
+
+    setAllEvents(tempEventArray);
+    
+  }, []);
+
   function handleAddEvent() {
     setAllEvents([...allEvents, newEvent]);
 
     // Set cookies
+    setCookie("Event Title", newEvent);
   }
 
   function handleDeleteEvent(eventId) {
-    const updatedEvents = events.filter(event => event.id !== eventId);
-    setAllEvents(updatedEvents);
+    setAllEvents(prevEvents => prevEvents.filter(event => event !== eventId))
+
+    // Delete cookies
+    deleteCookie("Event Title", eventId);
   };
+
+  function setCookie(cookieName, cookieValue)
+  {
+    const cookies = new Cookies(null, { path : '/' });
+    const eventAsString = JSON.stringify(cookieValue)
+    cookies.set(cookieName, eventAsString);
+  }
+
+  function deleteCookie(cookieName, cookieValue)
+  {
+    const cookies = new Cookies(null, { path : '/' });
+    const eventAsString = JSON.stringify(cookieValue)
+    cookies.remove(cookieName, eventAsString);
+  }
 
   return (
     <>
