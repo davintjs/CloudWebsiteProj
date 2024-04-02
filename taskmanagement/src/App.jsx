@@ -55,14 +55,14 @@ function App() {
     setAllEvents([...allEvents, newEvent]);
 
     // Set cookies
-    setCookie("Event Title", newEvent);
+    setCookie(newEvent.title, newEvent);
   }
 
   function handleDeleteEvent(eventId) {
     setAllEvents(prevEvents => prevEvents.filter(event => event !== eventId))
 
     // Delete cookies
-    deleteCookie("Event Title", eventId);
+    deleteCookie(eventId.title, eventId);
   };
 
   function setCookie(cookieName, cookieValue)
