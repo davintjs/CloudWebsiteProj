@@ -52,6 +52,10 @@ function App() {
   }, []);
 
   function handleAddEvent() {
+    var date = new Date(newEvent.end);
+    date.setDate(date.getDate() + 1);
+    newEvent.end = date;
+
     setAllEvents([...allEvents, newEvent]);
 
     // Set cookies
