@@ -6,37 +6,55 @@ li {
     list-style-type: none;
 }
 
-.InputBox {
-    width: 20%;
-    margin-right: 5px;
+.menuContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000; /* Ensure the menu is on top of other content */
 }
 
-.StartDate {
-    margin-right: 10px;
+.menuButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out; /* Add transition for smooth animation */
 }
 
-.EndDate {
-    margin-right: 10px;
+.open .menuButton {
+    color: #007bff; /* Change color when menu is open */
 }
 
-.ListItem1 {
-    padding-bottom: 10px;
+.dropdownMenu {
+    position: absolute;
+    top: 50px; /* Adjust the position of the dropdown menu */
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Ensure the menu is on top of other content */
+    width: auto;
+    opacity: 0;
 }
 
-.ListItem2 {
-    padding-bottom: 10px;
+.open .dropdownMenu {
+    opacity: 1;
 }
 
-.ListItem4 {
-    padding-right: 10px;
+.menuItem {
+    display: block;
+    width: auto;
+    padding: 8px 16px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    white-space: nowrap; /* Ensure text doesn't wrap */
 }
 
-.react-datepicker-popper {
-    z-index: 999;
-}
-
-.AddEventButton {
-    margin-top: 10px;
+.menuItem:hover {
+    background-color: #f9f9f9;
 }
 
 .CalendarContainer {

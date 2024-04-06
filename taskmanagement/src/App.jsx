@@ -2,11 +2,10 @@ import format from "date-fns/format";
 import getDay from "date-fns/getDay";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import PopupWindow from './PopupWindow';
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import Cookies from 'universal-cookie';
 import moment from "moment";
 import "./App.css";
@@ -26,8 +25,10 @@ const localizer = dateFnsLocalizer({
 let events = [];
 
 function App() {
-  const [newEvent, setNewEvent] = useState({ title: "", start: "", end: "" });
   const [allEvents, setAllEvents] = useState(events);
+  const [isNewEventPopupOpen, setIsNewEventPopupOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null); // Create a ref for the hamburger menu
 
   // Load cookies once on component mount
   useEffect(() => {
@@ -51,10 +52,29 @@ function App() {
     
   }, []);
 
-  function handleAddEvent() {
-    var date = new Date(newEvent.end);
-    date.setDate(date.getDate() + 1);
-    newEvent.end = date;
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false); // Close the hamburger menu if click occurs outside
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleAddEvent = (newEvent) => {
+
+    // Check that the fields are not empty
+    var checker = newEvent.end.toString().length > 0 && newEvent.start.toString().length > 0 && newEvent.title.length > 0;
+    if(!checker)
+      return;
+
+    newEvent.start = new Date(newEvent.start);
+    newEvent.end = new Date(newEvent.end);
 
     setAllEvents([...allEvents, newEvent]);
 
@@ -67,6 +87,18 @@ function App() {
 
     // Delete cookies
     deleteCookie(eventId.title, eventId);
+  };
+
+  const handleClearEvents = () => {
+    setAllEvents([]); // Clear all events
+    setIsMenuOpen(false);
+
+    // Clear all cookies
+    document.cookie.split(";").forEach(cookie => {
+      document.cookie = cookie
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
   };
 
   function setCookie(cookieName, cookieValue)
@@ -83,35 +115,34 @@ function App() {
     cookies.remove(cookieName, eventAsString);
   }
 
+  const handleOpenPopup = () => {
+    setIsNewEventPopupOpen(true);
+    setIsMenuOpen(false); // Close the hamburger menu when opening the popup
+  };
+
   return (
     <>
       <div className="App">
 
+        <div ref={menuRef} className={`menuContainer ${isMenuOpen ? 'open' : ''}`}>
+          <button className="menuButton" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            &#9776;
+          </button>
+          {isMenuOpen && (
+            <div className="dropdownMenu">
+              <button className="menuItem" onClick={handleClearEvents}>
+                Clear All Events
+              </button>
+              <button className="menuItem" onClick={handleOpenPopup}>
+                Add New Event
+              </button>
+            </div>
+          )}
+        </div>
         <h1>Calendar</h1>
 
-        <h2>Add New Event</h2>
-
-        <div className="TopBar">
-          <ul>
-            <li className="ListItem1">
-              <input className="InputBox" type="text" placeholder="Event Title" value={newEvent.title} onChange={(mEvent) => setNewEvent({ ...newEvent, title: mEvent.target.value })} />
-            </li>
-
-            <li className="ListItem2">
-              <DatePicker className="StartDate" placeholderText="Start Date" selected={newEvent.start} onChange={(start) => setNewEvent({ ...newEvent, start })} />
-            </li>
-
-            <li className="ListItem3">
-              <DatePicker className="EndDate" placeholderText="End Date" selected={newEvent.end} onChange={(end) => setNewEvent({ ...newEvent, end })} />
-            </li>
-
-            <li className="ListItem4">
-              <button className="AddEventButton" onClick={handleAddEvent}>
-                Add Event
-              </button>
-            </li>
-          </ul>
-        </div>
+        {/* Render the PopupWindow component */}
+        <PopupWindow isOpen={isNewEventPopupOpen} onClose={() => setIsNewEventPopupOpen(false)} onSave={handleAddEvent} />
 
         <div className="CalendarContainer">
           <Calendar className="Calendar" localizer={localizer} events={allEvents} startAccessor="start" endAccessor="end" onSelectEvent={handleDeleteEvent} />

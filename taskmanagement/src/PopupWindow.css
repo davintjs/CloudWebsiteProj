@@ -1,0 +1,85 @@
+
+.InputBox {
+    transition: border-color 0.3s ease-in-out;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px 10px;
+    font-size:medium;
+    width: 60%;
+}
+
+.InputBox:hover {
+    border-color: #007bff;
+}
+
+.InputBox:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.AddEventButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 10px;
+}
+
+.AddEventButton:hover {
+    background-color: #0056b3;
+}
+
+.react-datepicker-popper {
+    z-index: 999;
+}
+
+.popupWindow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    min-width: 25vw; /* Minimum width of 25% of the viewport width */
+    min-height: 25vh; /* Minimum height of 25% of the viewport height */
+}
+  
+.popupWindow.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popupContent {
+    text-align: center;
+}
+
+.popupContent label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.TopBar {
+    display: flex;
+    flex-direction: column; /* Set flex direction to column */
+}
+  
+.TopBar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+  
+.TopBar li {
+    margin: 10px 0px; /* Adjust margin between list items */
+}
+
